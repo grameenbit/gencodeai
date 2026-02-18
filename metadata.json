@@ -1,0 +1,5 @@
+{
+  "name": "GenCode AI editor",
+  "description": "A Lovable/Replit-style AI coding agent capable of generating, editing, and deleting files with a live preview and console environment.",
+  "requestFramePermissions": []
+}
