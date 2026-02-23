@@ -164,8 +164,9 @@ export const planFileChanges = async (
     }
   } else {
     // USE GOOGLE GENAI
-    if (!process.env.API_KEY) throw new Error("API_KEY missing");
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI API Key is not configured. Please add VITE_GEMINI_API_KEY to your environment variables.");
+    const ai = new GoogleGenAI({ apiKey });
     
     // Always use flash for planning if not custom
     const planningModel = 'gemini-3-flash-preview'; 
@@ -227,8 +228,9 @@ export const generateCode = async (
     }
   } else {
     // USE GOOGLE GENAI
-    if (!process.env.API_KEY) throw new Error("API_KEY missing");
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI API Key is not configured. Please add VITE_GEMINI_API_KEY to your environment variables.");
+    const ai = new GoogleGenAI({ apiKey });
 
     const parts: any[] = [{ text: userMessage }];
 
@@ -277,8 +279,9 @@ export const generateCode = async (
 };
 
 export const generateProjectTitle = async (prompt: string): Promise<string> => {
-  if (!process.env.API_KEY) return "New Project";
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) return "New Project";
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
