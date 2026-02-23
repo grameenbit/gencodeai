@@ -205,9 +205,13 @@ const App: React.FC = () => {
       // 3. EXECUTION PHASE (The Engineer)
       const response = await generateCode(userPrompt, finalContext, selectedModel, currentStack, attachments, activeCustomModel);
       
+      // Ensure response has proper structure with defaults
+      const commands = response?.commands || [];
+      const fileOps = response?.files || [];
+
       // Execute simulated commands
-      if (response.commands && response.commands.length > 0) {
-        response.commands.forEach(cmd => {
+      if (commands && commands.length > 0) {
+        commands.forEach(cmd => {
           setTerminalEntries(prev => [...prev, { command: cmd, output: "Running...", timestamp: Date.now(), status: 'running' }]);
           setTimeout(() => {
             setTerminalEntries(prev => prev.map(e => e.command === cmd ? { ...e, output: "Success: Processed package/command.", status: 'success' } : e));
@@ -219,7 +223,7 @@ const App: React.FC = () => {
       let updatedFiles = [...files];
       const modifiedMeta: { path: string; operation: FileOperationType }[] = [];
       
-      response.files.forEach(op => {
+      fileOps.forEach(op => {
         modifiedMeta.push({ path: op.path, operation: op.operation });
         updatedFiles = updatedFiles.filter(f => f.path !== op.path);
         if (op.operation !== FileOperationType.DELETE) {
@@ -243,7 +247,9 @@ const App: React.FC = () => {
       }]);
 
     } catch (e: any) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: `Error: ${e.message}` }]);
+      console.error("[v0] Chat Error:", e);
+      const errorMsg = e.message || "An unexpected error occurred. Please check your API key and try again.";
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: `⚠️ Error: ${errorMsg}` }]);
     } finally {
       setIsAiLoading(false);
     }

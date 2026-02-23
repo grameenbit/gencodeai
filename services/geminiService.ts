@@ -222,9 +222,21 @@ export const generateCode = async (
     // USE CUSTOM API
     const result = await callCustomAi(customModel, fullSystemPrompt, userMessage);
     try {
-      return parseJsonLoose(result) as AiResponse;
+      const parsed = parseJsonLoose(result) as AiResponse;
+      // Ensure the response has all required fields
+      return {
+        thought: parsed.thought || "",
+        files: Array.isArray(parsed.files) ? parsed.files : [],
+        commands: Array.isArray(parsed.commands) ? parsed.commands : []
+      };
     } catch (e) {
-       throw new Error(`AI returned invalid format. Please try again. details: ${e}`);
+       console.error("[v0] Custom AI Parse Error:", result);
+       // Return default safe response instead of throwing
+       return {
+         thought: "Unable to parse custom AI response",
+         files: [],
+         commands: []
+       };
     }
   } else {
     // USE GOOGLE GENAI
@@ -271,9 +283,21 @@ export const generateCode = async (
     });
 
     try {
-      return JSON.parse(response.text) as AiResponse;
+      const parsed = JSON.parse(response.text) as AiResponse;
+      // Ensure the response has all required fields
+      return {
+        thought: parsed.thought || "",
+        files: Array.isArray(parsed.files) ? parsed.files : [],
+        commands: Array.isArray(parsed.commands) ? parsed.commands : []
+      };
     } catch (e) {
-      throw new Error("AI returned invalid JSON structure.");
+      console.error("[v0] AI Response Parse Error:", response.text);
+      // Return default safe response instead of throwing
+      return {
+        thought: "Unable to parse AI response properly",
+        files: [],
+        commands: []
+      };
     }
   }
 };
