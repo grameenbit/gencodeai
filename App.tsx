@@ -185,6 +185,8 @@ const App: React.FC = () => {
     setIsAiLoading(true);
 
     const activeCustomModel = customModels.find(m => m.id === selectedModel);
+    console.log("[v0] Selected Model ID:", selectedModel);
+    console.log("[v0] Active Custom Model:", activeCustomModel);
 
     // Update project title if it's new
     if (projects.find(p => p.id === currentProjectId)?.title === "Untitled Project") {
@@ -195,15 +197,20 @@ const App: React.FC = () => {
 
     try {
       // 1. PLANNING PHASE (The Architect)
+      console.log("[v0] Starting planning phase...");
       const filePaths = files.map(f => f.path);
       const affectedPaths = await planFileChanges(userPrompt, filePaths, selectedModel, activeCustomModel);
+      console.log("[v0] Planning complete. Affected paths:", affectedPaths);
       
       // 2. CONTEXT GATHERING
       const contextFiles = files.filter(f => affectedPaths.includes(f.path));
       const finalContext = contextFiles.length > 0 ? contextFiles : files;
+      console.log("[v0] Context files count:", finalContext.length);
 
       // 3. EXECUTION PHASE (The Engineer)
+      console.log("[v0] Starting code generation...");
       const response = await generateCode(userPrompt, finalContext, selectedModel, currentStack, attachments, activeCustomModel);
+      console.log("[v0] Code generation response:", response);
       
       // Ensure response has proper structure with defaults
       const commands = response?.commands || [];

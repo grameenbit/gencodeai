@@ -80,10 +80,16 @@ const callCustomAi = async (
   systemPrompt: string,
   userPrompt: string
 ): Promise<string> => {
-  const headers = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${modelConfig.apiKey}`
   };
+
+  // Add OpenRouter specific headers if using OpenRouter
+  if (modelConfig.baseUrl.includes('openrouter.ai')) {
+    headers['HTTP-Referer'] = window.location.origin;
+    headers['X-Title'] = 'GenCode Studio';
+  }
 
   const body = {
     model: modelConfig.modelId,
@@ -105,14 +111,20 @@ const callCustomAi = async (
      url += '/chat/completions';
   }
 
+  console.log("[v0] Calling Custom API:", url);
+  console.log("[v0] Request Body:", JSON.stringify(body, null, 2));
+
   const res = await fetch(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(body)
   });
 
+  console.log("[v0] API Response Status:", res.status);
+
   if (!res.ok) {
     const err = await res.text();
+    console.error("[v0] API Error Response:", err);
     // Try to parse error to show a cleaner message if possible
     try {
         const jsonErr = JSON.parse(err);
@@ -124,7 +136,17 @@ const callCustomAi = async (
   }
 
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || "";
+  console.log("[v0] API Response Data:", data);
+  
+  const content = data.choices?.[0]?.message?.content || "";
+  console.log("[v0] Extracted Content:", content);
+  
+  if (!content) {
+    console.error("[v0] Empty response from API! Full response:", JSON.stringify(data, null, 2));
+    throw new Error("Empty response from Custom API. Please check API configuration.");
+  }
+  
+  return content;
 };
 
 export const testCustomConnection = async (model: CustomModel): Promise<boolean> => {

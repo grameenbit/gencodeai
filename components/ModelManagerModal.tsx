@@ -8,10 +8,10 @@ interface ModelManagerModalProps {
 }
 
 const ModelManagerModal: React.FC<ModelManagerModalProps> = ({ onClose, onSave }) => {
-  const [name, setName] = useState('');
-  const [baseUrl, setBaseUrl] = useState('https://api.openai.com/v1');
+  const [name, setName] = useState('OpenRouter');
+  const [baseUrl, setBaseUrl] = useState('https://openrouter.ai/api/v1');
   const [apiKey, setApiKey] = useState('');
-  const [modelId, setModelId] = useState('');
+  const [modelId, setModelId] = useState('openai/gpt-3.5-turbo');
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,11 +69,11 @@ const ModelManagerModal: React.FC<ModelManagerModalProps> = ({ onClose, onSave }
             <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">API Base URL</label>
             <input 
               className="w-full bg-[#27272a] border border-[#3f3f46] rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              placeholder="https://api.groq.com/openai/v1"
+              placeholder="https://openrouter.ai/api/v1"
               value={baseUrl}
               onChange={e => setBaseUrl(e.target.value)}
             />
-            <p className="text-[10px] text-gray-600 mt-1">Must support OpenAI-compatible /chat/completions endpoint.</p>
+            <p className="text-[10px] text-gray-600 mt-1">OpenRouter: https://openrouter.ai/api/v1 | Groq: https://api.groq.com/openai/v1</p>
           </div>
 
           <div className="flex gap-4">
@@ -81,10 +81,11 @@ const ModelManagerModal: React.FC<ModelManagerModalProps> = ({ onClose, onSave }
                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase">Model ID</label>
                 <input 
                   className="w-full bg-[#27272a] border border-[#3f3f46] rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                  placeholder="e.g., llama3-8b-8192"
+                  placeholder="e.g., openai/gpt-3.5-turbo"
                   value={modelId}
                   onChange={e => setModelId(e.target.value)}
                 />
+                <p className="text-[10px] text-gray-600 mt-1">For OpenRouter, use format: provider/model-name</p>
             </div>
           </div>
 
